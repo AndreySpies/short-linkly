@@ -11,44 +11,29 @@ class ShortLinksController < ApplicationController
   end
 
   def create
-    user_id = params[:user_id]
-    long_link = params[:long_link]
+    base_url = request.base_url
 
-    @short_link = ShortLink.find_by(user_id: user_id, long_link: long_link)
-    render_short_link and return if @short_link
+    @short_link = ShortLink.find_by(short_link_params)
+    if @short_link
+      render json: @short_link,
+        url: base_url,
+        serializer: NewShortLinkSerializer,
+        status: :created and return
+    end
 
-    @short_link = ShortLink.new(user_id: params[:user_id], long_link: params[:long_link])
+    @short_link = ShortLink.new(short_link_params)
     if @short_link.save
-      render_short_link
+      render json: @short_link, url: base_url, serializer: NewShortLinkSerializer, status: :created
     else
       render json: @short_link.errors, status: :unprocessable_entity
     end
   end
 
   def analytics
-    render_analytics
+    render json: @short_link, url: request.base_url, serializer: AnalyticsShortLinkSerializer
   end
 
   private
-
-  def render_short_link
-    hash = {
-      "long_link": @short_link.long_link,
-      "short_link": request.base_url + "/" + @short_link.encoded_id
-    }
-
-      render json: hash, status: :created
-  end
-
-  def render_analytics
-    hash = {
-      "short_link": request.base_url + "/" + @short_link.encoded_id,
-      "long_link": @short_link.long_link,
-      "accesses": @short_link.accesses
-    }
-
-    render json: hash, status: :ok
-  end
 
   def set_short_link
     @short_link = ShortLink.find_by_encoded_id(params[:id])
@@ -57,6 +42,6 @@ class ShortLinksController < ApplicationController
   end
 
   def short_link_params
-    params.require(:short_link).permit(:long_link, :user_id)
+    params.permit(:long_link, :user_id)
   end
 end
