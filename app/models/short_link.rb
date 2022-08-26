@@ -12,6 +12,10 @@ class ShortLink < ApplicationRecord
         id.to_i(36)
     end
 
+    def get_short_link(base_url)
+        "#{base_url}/#{encoded_id}"
+    end
+
     def self.find_by_encoded_id(encoded_id)
         ShortLink.find(encoded_id.to_i(36))
     end
