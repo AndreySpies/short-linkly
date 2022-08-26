@@ -62,4 +62,15 @@ RSpec.describe ShortLink, type: :model do
       is_expected.to eq(short_link)
     end
   end
+
+  describe '.increase_accesses' do
+    let(:short_link) { create(:short_link) }
+
+    it 'increase accesses by 2' do
+      short_link.increase_accesses
+      short_link.increase_accesses
+
+      expect(short_link.accesses).to eq(2)
+    end
+  end
 end
