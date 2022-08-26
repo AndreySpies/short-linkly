@@ -17,7 +17,7 @@ class ShortLink < ApplicationRecord
     end
 
     def self.find_by_encoded_id(encoded_id)
-        ShortLink.find(encoded_id.to_i(36))
+       ShortLink.find_by_id(encoded_id.to_i(36))
     end
 
     def increase_accesses

@@ -6,8 +6,6 @@ class ShortLinksController < ApplicationController
       @short_link.increase_accesses
       redirect_to @short_link.long_link, status: :moved_permanently and return
     end
-
-    raise ActiveRecord::RecordNotFound, "Record not found."
   end
 
   def create
